@@ -264,14 +264,24 @@ public class SpringApplication {
 		//resourceLoader和classLoader的区别和作用。具体是怎么做的
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
-		//把主配置类保存起来
+		/**
+		 * 把主配置类保存起来
+		 */
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
-		//推断应用类型，默认是org.springframework.boot.WebApplicationType.SERVLET
+		/**
+		 * 推断应用类型，默认是org.springframework.boot.WebApplicationType.SERVLET
+		 * 也就是因为这个类型是SERVLET，在创建context的时候创建的而是ServletWebServerApplicationContext类型的。
+		 * 也就是这个context决定的启动tomcat
+		 */
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
-		//查出spring.factories中配置的ApplicationContextInitializer，实例化并保存起来
+		/**
+		 * 查出spring.factories中配置的ApplicationContextInitializer，实例化并保存起来
+		 */
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
-		//查出spring.factories中配置的ApplicationListener，实例化并保存起来
+		/**
+		 * 查出spring.factories中配置的ApplicationListener，实例化并保存起来
+		 */
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		//推断出主入口类
 		this.mainApplicationClass = deduceMainApplicationClass();
@@ -304,6 +314,10 @@ public class SpringApplication {
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		configureHeadlessProperty();
+		/**
+		 * 1、获取SpringApplicationRunListener
+		 * 2、发送ApplicationStartingEvent事件
+		 */
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
@@ -312,6 +326,7 @@ public class SpringApplication {
 					args);
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
+
 			configureIgnoreBeanInfo(environment);
 			//设置springboot的图像
 			Banner printedBanner = printBanner(environment);
@@ -329,6 +344,9 @@ public class SpringApplication {
 					printedBanner);
 
 			//此处的刷新context是上面springboot中注入的对象的刷新和处理
+			/**
+			 * tomcat就是在这个地方创建启动的
+			 */
 			refreshContext(context);
 
 			afterRefresh(context, applicationArguments);
@@ -337,6 +355,9 @@ public class SpringApplication {
 				new StartupInfoLogger(this.mainApplicationClass)
 						.logStarted(getApplicationLog(), stopWatch);
 			}
+			/**
+			 * 发送ApplicationStartedEvent事件
+			 */
 			listeners.started(context);
 			callRunners(context, applicationArguments);
 		}
@@ -363,12 +384,14 @@ public class SpringApplication {
 		//设置环境类型和命令行参数
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		/**
-		 * 执行SpringApplicationRunListeners.environmentPrepared
-		 * 此处会调用spring.factories中配置的ApplicationListener，
+		 * 此处会调用spring.factories中配置的ApplicationListener，ApplicationEnvironmentPreparedEvent
 		 * 也就是在这个地方environment中添加了applicationConfig: [classpath:/bootstrap.properties]
 		 */
 		listeners.environmentPrepared(environment);
 
+		/**
+		 * 把环境对象绑定的springApplication对象上
+		 */
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
 			environment = new EnvironmentConverter(getClassLoader())
@@ -394,11 +417,19 @@ public class SpringApplication {
 			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
-		//注入internalConfigurationBeanNameGenerator，设置classLoader和resourceLoader
+		/**
+		 * 注入internalConfigurationBeanNameGenerator，
+		 * 设置classLoader和resourceLoader
+		 */
 		postProcessApplicationContext(context);
-		//执行spring.factories中配置的ApplicationContextInitializer
+		/**
+		 * 执行spring.factories中配置的ApplicationContextInitializer
+		 */
 		applyInitializers(context);
-		//执行多播器，执行监听者的onApplicationEvent方法,发送ApplicationContextInitializedEvent事件
+		/**
+		 * 执行多播器，执行监听者的onApplicationEvent方法,
+		 * 发送ApplicationContextInitializedEvent事件
+		 */
 		listeners.contextPrepared(context);
 
 		if (this.logStartupInfo) {
@@ -420,7 +451,10 @@ public class SpringApplication {
 		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
 		load(context, sources.toArray(new Object[0]));
-		//执行多播器，发送ApplicationPreparedEvent事件，context预处理已完成
+		/**
+		 * 执行多播器
+		 * 发送ApplicationPreparedEvent事件，context预处理已完成
+		 */
 		listeners.contextLoaded(context);
 	}
 
@@ -521,7 +555,9 @@ public class SpringApplication {
 		}
 		//根据参数判断当前的环境类型
 		configurePropertySources(environment, args);
-		//根据spring.profiles.active文件设置环境类型
+		/**
+		 * 配置配置文件，通过spring.profiles.active配置项
+		 */
 		configureProfiles(environment, args);
 	}
 
