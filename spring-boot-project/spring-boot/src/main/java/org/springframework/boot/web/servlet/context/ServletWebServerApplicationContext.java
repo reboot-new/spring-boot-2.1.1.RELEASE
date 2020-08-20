@@ -175,12 +175,25 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 	private void createWebServer() {
 		WebServer webServer = this.webServer;
+
 		ServletContext servletContext = getServletContext();
 		if (webServer == null && servletContext == null) {
 			/**
-			 * 获取到tomcat容器bean
+			 *
+			 * @SpringBootApplication继承@EnableAutoConfiguration
+			 * @EnableAutoConfiguration注解@Import(AutoConfigurationImportSelector.class)
+			 * AutoConfigurationImportSelector会检查spring.factory中配置的EnableAutoConfiguration
+			 *
+			 * spring-boot-autoconfigure中EnableAutoConfiguration节点配置了{@link ServletWebServerFactoryAutoConfiguration}
+			 * @import(ServletWebServerFactoryConfiguration.EmbeddedTomcat.class)
+			 *
+			 * 获取ServletWebServerFactory容器
 			 */
 			ServletWebServerFactory factory = getWebServerFactory();
+
+			/**
+			 * 创建tomcat并启动
+			 */
 			this.webServer = factory.getWebServer(getSelfInitializer());
 		}
 		else if (servletContext != null) {
