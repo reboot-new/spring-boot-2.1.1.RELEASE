@@ -29,6 +29,12 @@ import org.springframework.core.ResolvableType;
 public abstract class AbstractFailureAnalyzer<T extends Throwable>
 		implements FailureAnalyzer {
 
+	/**
+	 * 分析异常信息，判断异常类型是否和泛型的类型一致。
+	 * 如果一直才会进行进一步的包装和打印
+	 * @param failure the failure
+	 * @return
+	 */
 	@Override
 	public FailureAnalysis analyze(Throwable failure) {
 		T cause = findCause(failure, getCauseType());

@@ -339,7 +339,14 @@ public class SpringApplication {
 					SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
 
-			//容器预准备流程
+			/**
+			 * 准备环境
+			 * 1：把环境设置到容器中
+			 * 2: 循环调用AppplicationInitnazlier 进行容器初始化工作
+			 * 3:发布容器上下文准备完成事件
+			 * 4:注册关于springboot特性的相关单例Bean
+			 * 5:发布容器上下文加载完毕事件
+			 */
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
 

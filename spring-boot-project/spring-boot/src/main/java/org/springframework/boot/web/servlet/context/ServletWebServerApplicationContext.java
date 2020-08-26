@@ -184,7 +184,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			 * @EnableAutoConfiguration注解@Import(AutoConfigurationImportSelector.class)
 			 * AutoConfigurationImportSelector会检查spring.factory中配置的EnableAutoConfiguration
 			 *
-			 * spring-boot-autoconfigure中EnableAutoConfiguration节点配置了{@link ServletWebServerFactoryAutoConfiguration}
+			 * spring-boot-autoconfigure中EnableAutoConfiguration节点配置了{@link org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration}
 			 * @import(ServletWebServerFactoryConfiguration.EmbeddedTomcat.class)
 			 *
 			 * 获取ServletWebServerFactory容器
