@@ -60,5 +60,4 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 		}
 		return new OriginTrackedPropertiesLoader(resource).load();
 	}
-
 }

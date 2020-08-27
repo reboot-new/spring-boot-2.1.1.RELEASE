@@ -337,8 +337,14 @@ public class ConfigFileApplicationListener
 				this.processedProfiles.add(profile);
 			}
 			resetEnvironmentProfiles(this.processedProfiles);
+			/**
+			 * 加载解析配置文件并缓存起来
+			 */
 			load(null, this::getNegativeProfileFilter,
 					addToLoaded(MutablePropertySources::addFirst, true));
+			/**
+			 * 把缓存的配置项保存到环境对象中
+			 */
 			addLoadedPropertySources();
 		}
 
