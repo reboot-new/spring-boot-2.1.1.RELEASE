@@ -105,6 +105,9 @@ public class ConfigFileApplicationListener
 	private static final String DEFAULT_PROPERTIES = "defaultProperties";
 
 	// Note the order is from least to most specific (last one wins)
+	/**
+	 * 搜索配置文件的路径越往后级别越高
+	 */
 	private static final String DEFAULT_SEARCH_LOCATIONS = "classpath:/,classpath:/config/,file:./,file:./config/";
 
 	private static final String DEFAULT_NAMES = "application";
@@ -429,8 +432,7 @@ public class ConfigFileApplicationListener
 				if (checkForExisting) {
 					for (MutablePropertySources merged : this.loaded.values()) {
 						if (merged.contains(document.getPropertySource().getName())) {
-							return;
-						}
+							return;						}
 					}
 				}
 				MutablePropertySources merged = this.loaded.computeIfAbsent(profile,
@@ -439,10 +441,22 @@ public class ConfigFileApplicationListener
 			};
 		}
 
+		/**
+		 * 根据profile搜索配置文件。
+		 * @param profile
+		 * @param filterFactory
+		 * @param consumer
+		 */
 		private void load(Profile profile, DocumentFilterFactory filterFactory,
 				DocumentConsumer consumer) {
+			/**
+			 * 获取搜索的文件夹
+			 */
 			getSearchLocations().forEach((location) -> {
 				boolean isFolder = location.endsWith("/");
+				/**
+				 * 获取带搜索的文件名
+				 */
 				Set<String> names = isFolder ? getSearchNames() : NO_SEARCH_NAMES;
 				names.forEach(
 						(name) -> load(location, name, profile, filterFactory, consumer));
